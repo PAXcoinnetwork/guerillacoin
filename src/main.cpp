@@ -21,7 +21,7 @@
 using namespace std;
 using namespace boost;
 
-//
+
 // Global state
 //
 
@@ -2511,7 +2511,7 @@ bool LoadBlockIndex(bool fAllowNew)
 
         const char* pszTimestamp = "The Times 2014/06/18 Revenge killings push Iraq to brink of sectarian war";
         CTransaction txNew;
-        txNew.nTime = 1403060298;
+        txNew.nTime = 1403119678;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << CBigNum(42) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -2521,9 +2521,9 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 6;
-        block.nTime    = 1403060298;
+        block.nTime    = 1403119678;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
-        block.nNonce   = fTestNet ? 2990 : 1528935;
+        block.nNonce   = fTestNet ? 47597 : 2463277;
 
         
         uint256 hash = block.GetHash();
@@ -2540,7 +2540,7 @@ bool LoadBlockIndex(bool fAllowNew)
         
         
         //// debug print
-        assert(block.hashMerkleRoot == uint256("0x60a322d67ec2aee9e07060624a144c488a363be81a12d3788e2f336bfc18eeb2"));
+        assert(block.hashMerkleRoot == uint256("0x9732d8401f4d6c33a5e7240976d934ed0a87b0911966804531f642851894abed"));
         block.print();
         assert(block.GetHash() == (fTestNet ? hashGenesisBlockTestNet : hashGenesisBlock));
         assert(block.CheckBlock());
