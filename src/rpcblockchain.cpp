@@ -52,7 +52,7 @@ double GetPoWMHashPS()
     if (pindexBest->nHeight >= LAST_POW_BLOCK)
         return 0;
 
-    int nPoWInterval = 72;
+    int nPoWInterval = 120;
     int64_t nTargetSpacingWorkMin = 30, nTargetSpacingWork = 30;
 
     CBlockIndex* pindex = pindexGenesisBlock;
@@ -62,7 +62,7 @@ double GetPoWMHashPS()
     {
         if (pindex->IsProofOfWork())
         {
-            int64_t nActualSpacingWork = pindex->GetBlockTime() - pindexPrevWork->GetBlockTime();
+            int64_t nActualSpacingWork = AbsDiff(pindex->GetBlockTime(), pindexPrevWork->GetBlockTime());
             nTargetSpacingWork = ((nPoWInterval - 1) * nTargetSpacingWork + nActualSpacingWork + nActualSpacingWork) / (nPoWInterval + 1);
             nTargetSpacingWork = max(nTargetSpacingWork, nTargetSpacingWorkMin);
             pindexPrevWork = pindex;
@@ -106,30 +106,15 @@ uint64_t GetPoSKernelPS()
     }
 }
 
-/* double GetPoSKernelPS()
+Value getnetworkhashps(const Array& params, bool fHelp)
 {
-    int nPoSInterval = 72;
-    double dStakeKernelsTriedAvg = 0;
-    int nStakesHandled = 0, nStakesTime = 0;
-
-    CBlockIndex* pindex = pindexBest;
-    CBlockIndex* pindexPrevStake = NULL;
-
-    while (pindex && nStakesHandled < nPoSInterval)
-    {
-        if (pindex->IsProofOfStake())
-        {
-            dStakeKernelsTriedAvg += GetDifficulty(pindex) * 4294967296.0;
-            nStakesTime += pindexPrevStake ? AbsDiff(pindexPrevStake->nTime, pindex->nTime) : 0;
-            pindexPrevStake = pindex;
-            nStakesHandled++;
-        }
-
-        pindex = pindex->pprev;
-    }
-
-    return nStakesTime ? dStakeKernelsTriedAvg / nStakesTime : 0;
-}*/
+    if (fHelp || params.size() != 0)
+        throw runtime_error(
+                            "getnetworkhashps\n"
+                            "Returns a exponential moving estimate of the current network hashrate (Mhash/s)");
+    
+    return GetPoWMHashPS();
+}
 
 Object blockToJSON(const CBlock& block, const CBlockIndex* blockindex, bool fPrintTransactionDetail)
 {
