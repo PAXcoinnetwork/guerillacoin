@@ -2524,19 +2524,6 @@ bool LoadBlockIndex(bool fAllowNew)
         block.nTime    = 1403119678;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
         block.nNonce   = fTestNet ? 47597 : 2463277;
-
-        
-        uint256 hash = block.GetHash();
-        
-        if (hash != (fTestNet ? hashGenesisBlockTestNet : hashGenesisBlock))
-        {
-            uint256 hashTarget = CBigNum().SetCompact(block.nBits).getuint256();
-            while(block.GetHash() > hashTarget)
-            {
-                block.nNonce++;
-            }
-            block.print();
-        }
         
         
         //// debug print
