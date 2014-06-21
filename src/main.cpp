@@ -974,7 +974,7 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64_t GetProofOfWorkReward(int64_t nFees)
 {
     int64_t nSubsidy = 0;
-    if(pindexBest->nHeight <= 10000)
+    if(pindexBest->nHeight <= LAST_POW_BLOCK)
         nSubsidy = 750 * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -989,10 +989,11 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 uint64_t GetInterestRate(bool wholeCents)
 {
     double weight = GetPoSKernelPS();
-    if(weight < 512)
-        weight = 512;
-    uint64_t rate = std::max(COIN_YEAR_REWARD,
-                    static_cast<int64_t>(COIN_YEAR_REWARD * log(weight / 512.0)));
+    uint64_t rate = COIN_YEAR_REWARD;
+    if(weight > 16384)
+        rate = std::max(COIN_YEAR_REWARD,
+                        std::min(static_cast<int64_t>(COIN_YEAR_REWARD * log(weight / 16384.0)),
+                                8*COIN_YEAR_REWARD));
     return wholeCents ? 100 * rate : rate;
 }
 

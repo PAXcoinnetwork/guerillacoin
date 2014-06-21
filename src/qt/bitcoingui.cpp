@@ -43,6 +43,7 @@
 #include <QStatusBar>
 #include <QLabel>
 #include <QLineEdit>
+#include <QInputDialog>
 #include <QPushButton>
 #include <QLocale>
 #include <QMessageBox>
@@ -97,10 +98,29 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     createMenuBar();
 
     // Create the toolbars
-    createToolBars();
+    QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
+    createToolBars(toolbar);
 
     // Create the tray icon (or setup the dock icon)
     createTrayIcon();
+
+	QPalette p;
+	p.setColor(QPalette::Window, QColor(0x22, 0x22, 0x22));
+	p.setColor(QPalette::Button, QColor(0x22, 0x22, 0x22));
+	p.setColor(QPalette::Mid, QColor(0x22, 0x22, 0x22));
+	p.setColor(QPalette::Base, QColor(0x22, 0x22, 0x22));
+	p.setColor(QPalette::AlternateBase, QColor(0x22, 0x22, 0x22));
+	setPalette(p);
+	QFile style(":/text/res/text/style.qss");
+	style.open(QFile::ReadOnly);
+	setStyleSheet(QString::fromUtf8(style.readAll()));
+
+    /* don't override the background color of the toolbar on mac os x due to
+       the whole component it resides on not being paintable
+     */
+#ifdef Q_OS_MAC
+    toolbar->setStyleSheet("QToolBar { background-color: transparent; border: 0px solid black; padding: 3px; }");
+#endif
 
     // Create tabs
     overviewPage = new OverviewPage();
@@ -120,6 +140,7 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     signVerifyMessageDialog = new SignVerifyMessageDialog(this);
 
     centralWidget = new QStackedWidget(this);
+	centralWidget->setObjectName("central");
     centralWidget->addWidget(overviewPage);
     centralWidget->addWidget(transactionsPage);
     centralWidget->addWidget(addressBookPage);
@@ -131,7 +152,8 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     statusBar();
 
     // Status bar notification icons
-    QFrame *frameBlocks = new QFrame();
+	QFrame *frameBlocks = new QFrame();
+	frameBlocks->setObjectName("frameBlocks");
     frameBlocks->setContentsMargins(0,0,0,0);
     frameBlocks->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     QHBoxLayout *frameBlocksLayout = new QHBoxLayout(frameBlocks);
@@ -166,6 +188,8 @@ BitcoinGUI::BitcoinGUI(QWidget *parent):
     progressBar->setAlignment(Qt::AlignCenter);
     progressBar->setVisible(false);
 
+    
+    
     // Override style sheet for progress bar for styles that have a segmented progress bar,
     // as they make the text unreadable (workaround for issue #1071)
     // See https://qt-project.org/doc/qt-4.8/gallery.html
@@ -208,35 +232,42 @@ BitcoinGUI::~BitcoinGUI()
 #endif
 }
 
+static QIcon makeIcon(QString _s)
+{
+	QIcon ret(":/icons/" + _s + "_off");
+	ret.addFile(":/icons/" + _s, QSize(), QIcon::Normal, QIcon::On);
+	return ret;
+}
+
 void BitcoinGUI::createActions()
 {
     QActionGroup *tabGroup = new QActionGroup(this);
 
-    overviewAction = new QAction(QIcon(":/icons/overview"), tr("&Overview"), this);
+	overviewAction = new QAction(makeIcon("overview"), tr("&overview"), this);
     overviewAction->setToolTip(tr("Show general overview of wallet"));
     overviewAction->setCheckable(true);
     overviewAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_1));
     tabGroup->addAction(overviewAction);
 
-    sendCoinsAction = new QAction(QIcon(":/icons/send"), tr("&Send coins"), this);
+	sendCoinsAction = new QAction(makeIcon("send"), tr("&send"), this);
     sendCoinsAction->setToolTip(tr("Send coins to a Guerillacoin address"));
     sendCoinsAction->setCheckable(true);
     sendCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_2));
     tabGroup->addAction(sendCoinsAction);
 
-    receiveCoinsAction = new QAction(QIcon(":/icons/receiving_addresses"), tr("&Receive coins"), this);
+	receiveCoinsAction = new QAction(makeIcon("receive"), tr("&receive"), this);
     receiveCoinsAction->setToolTip(tr("Show the list of addresses for receiving payments"));
     receiveCoinsAction->setCheckable(true);
     receiveCoinsAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_3));
     tabGroup->addAction(receiveCoinsAction);
 
-    historyAction = new QAction(QIcon(":/icons/history"), tr("&Transactions"), this);
+	historyAction = new QAction(makeIcon("history"), tr("&transactions"), this);
     historyAction->setToolTip(tr("Browse transaction history"));
     historyAction->setCheckable(true);
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
     tabGroup->addAction(historyAction);
 
-    addressBookAction = new QAction(QIcon(":/icons/address-book"), tr("&Address Book"), this);
+	addressBookAction = new QAction(makeIcon("address"), tr("&addresses"), this);
     addressBookAction->setToolTip(tr("Edit the list of stored addresses and labels"));
     addressBookAction->setCheckable(true);
     addressBookAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
@@ -300,6 +331,11 @@ void BitcoinGUI::createActions()
     connect(verifyMessageAction, SIGNAL(triggered()), this, SLOT(gotoVerifyMessageTab()));
 }
 
+void BitcoinGUI::changeStyleSheet()
+{
+	setStyleSheet(QInputDialog::getText(this, "Change Stylesheet", "Sheet", QLineEdit::Normal, styleSheet()));
+}
+
 void BitcoinGUI::createMenuBar()
 {
 #ifdef Q_OS_MAC
@@ -334,19 +370,14 @@ void BitcoinGUI::createMenuBar()
     help->addAction(aboutQtAction);
 }
 
-void BitcoinGUI::createToolBars()
+void BitcoinGUI::createToolBars(QToolBar* toolbar)
 {
-    QToolBar *toolbar = addToolBar(tr("Tabs toolbar"));
     toolbar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     toolbar->addAction(overviewAction);
     toolbar->addAction(sendCoinsAction);
     toolbar->addAction(receiveCoinsAction);
     toolbar->addAction(historyAction);
     toolbar->addAction(addressBookAction);
-
-    QToolBar *toolbar2 = addToolBar(tr("Actions toolbar"));
-    toolbar2->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    toolbar2->addAction(exportAction);
 }
 
 void BitcoinGUI::setClientModel(ClientModel *clientModel)
@@ -919,6 +950,14 @@ void BitcoinGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
+double GetStrength(uint64_t nWeight)
+{
+    double networkWeight = GetPoSKernelPS();
+    if (nWeight == 0 && networkWeight == 0)
+        return 0;
+    return nWeight / (static_cast<double>(nWeight) + networkWeight);
+}
+
 void BitcoinGUI::updateWeight()
 {
     if (!pwalletMain)
@@ -935,6 +974,9 @@ void BitcoinGUI::updateWeight()
     uint64_t nMinWeight = 0, nMaxWeight = 0;
     pwalletMain->GetStakeWeight(*pwalletMain, nMinWeight, nMaxWeight, nWeight);
 
+    // TODO: refactor this
+    overviewPage->setStrength(GetStrength(nWeight));
+    overviewPage->setInterestRate(GetInterestRate(true));
 }
 
 void BitcoinGUI::updateStakingIcon()
@@ -942,6 +984,7 @@ void BitcoinGUI::updateStakingIcon()
     if (pindexBest != NULL && pindexBest->nHeight < LAST_POW_BLOCK)
     {
         labelStakingIcon->setToolTip(tr("Not staking because blockchain is still in the proof-of-work phase"));
+        overviewPage->setStrength(0);
         return;
     }
     updateWeight();

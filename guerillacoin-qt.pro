@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = guerillacoin-qt
-VERSION = 0.7.5
+VERSION = 1.0.1
 INCLUDEPATH += src src/json src/qt
 DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
 CONFIG += no_include_pwd
@@ -310,7 +310,8 @@ FORMS += \
     src/qt/forms/sendcoinsentry.ui \
     src/qt/forms/askpassphrasedialog.ui \
     src/qt/forms/rpcconsole.ui \
-    src/qt/forms/optionsdialog.ui 
+    src/qt/forms/optionsdialog.ui \ 
+    src/qt/forms/simplesend.ui
 
 contains(USE_QRCODE, 1) {
 HEADERS += src/qt/qrcodedialog.h

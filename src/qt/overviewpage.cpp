@@ -176,6 +176,83 @@ void OverviewPage::setModel(WalletModel *model)
     updateDisplayUnit();
 }
 
+void OverviewPage::setStrength(double strength)
+{
+    QString strFormat;
+    if (strength == 0)
+    {
+        strFormat = "Very weak";
+        currentStrength = 0;
+    }
+    else if(strength < 0.00001)
+    {
+        strFormat = "Lazy";
+        currentStrength = 10;
+    }
+    else if (strength < 0.0001)
+    {
+        strFormat = "Weak";
+        currentStrength = 20;
+    }
+    else if (strength < 0.001)
+    {
+        strFormat = "Noob";
+        currentStrength = 25;
+    }
+    else if (strength < 0.02)
+    {
+        strFormat = "Miner";
+        currentStrength = 35;
+    }
+    else if (strength < 0.05)
+    {
+        strFormat = "Investor";
+        currentStrength = 40;
+    }
+    else if (strength < 0.1)
+    {
+        strFormat = "Accomplished";
+        currentStrength = 45;
+    }
+    else if (strength < 0.15)
+    {
+        strFormat = "Hardcore";
+        currentStrength = 55;
+    }
+    else if (strength < 0.20)
+    {
+        strFormat = "Awesome";
+        currentStrength = 65;
+    }
+    else if (strength < 0.25)
+    {
+        strFormat = "Whale";
+        currentStrength = 78;
+    }
+    else if (strength <= 1.0)
+    {
+        strFormat = "King Midas";
+        currentStrength = 100;
+    }
+    else
+    {
+        strFormat = "Error!";
+    }
+    ui->strengthBar->setValue(currentStrength);
+    ui->strengthBar->setFormat(strFormat);
+    ui->strengthBar->setTextVisible(true);
+}
+
+void OverviewPage::setInterestRate(qint64 interest)
+{
+    currentInterestRate = interest;
+    
+    // format as whole CENTs, this way we avoid conversion to double.
+    // space before percent sign because the gui uses a space before most units
+    QString formatStr = QString("%1 %").arg(BitcoinUnits::format(BitcoinUnits::BTC, interest));
+    ui->interestValueLabel->setText(formatStr);
+}
+
 void OverviewPage::updateDisplayUnit()
 {
     if(model && model->getOptionsModel())
