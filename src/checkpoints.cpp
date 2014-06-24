@@ -321,7 +321,7 @@ namespace Checkpoints
             return error("SendSyncCheckpoint: Checkpoint master key unavailable.");
         std::vector<unsigned char> vchPrivKey = ParseHex(CSyncCheckpoint::strMasterPrivKey);
         CKey key;
-        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end())); // if key is not correct openssl may crash
+        key.SetSecret(CSecret(vchPrivKey.begin(), vchPrivKey.end()));
         if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
             return error("SendSyncCheckpoint: Unable to sign checkpoint, check private key?");
 
