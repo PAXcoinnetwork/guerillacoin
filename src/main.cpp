@@ -46,6 +46,7 @@ unsigned int nStakeMaxAge = 365 * 24 * 60 * 60; // 365 days
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 500;
+int nNewCoinbaseMaturity = 150;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 
@@ -84,6 +85,16 @@ extern enum Checkpoints::CPMode CheckpointsMode;
 
 // These functions dispatch to one or all registered wallets
 
+
+int GetCoinbaseMaturity()
+{
+    if (fTestNet)
+        return 10;
+    else if (pindexBest->nHeight >= NEW_MATURITY_HEIGHT)
+        return nNewCoinbaseMaturity;
+    else
+        return nCoinbaseMaturity;
+}
 
 void RegisterWallet(CWallet* pwalletIn)
 {
@@ -815,7 +826,7 @@ int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (nCoinbaseMaturity+10) - GetDepthInMainChain());
+    return max(0, (GetCoinbaseMaturity()+10) - GetDepthInMainChain());
 }
 
 
@@ -1343,7 +1354,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 
             // If prev is coinbase or coinstake, check that it's matured
             if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
-                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < nCoinbaseMaturity; pindex = pindex->pprev)
+                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < GetCoinbaseMaturity(); pindex = pindex->pprev)
                     if (pindex->nBlockPos == txindex.pos.nBlockPos && pindex->nFile == txindex.pos.nFile)
                         return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", pindexBlock->nHeight - pindex->nHeight);
 
@@ -2492,7 +2503,6 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[3] = 0xef;
         bnProofOfWorkLimit = bnProofOfWorkLimitTestNet; // 16 bits PoW target limit for testnet
         nStakeMinAge = 1 * 60 * 60; // test net min age is 1 hour
-        nCoinbaseMaturity = 10; // test maturity is 10 blocks
     }
 
     //

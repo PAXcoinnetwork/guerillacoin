@@ -26,6 +26,7 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 6000;
+static const int NEW_MATURITY_HEIGHT = 6500;
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
@@ -125,7 +126,7 @@ const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfSta
 void StakeMiner(CWallet *pwallet);
 void ResendWalletTransactions(bool fForce = false);
 uint64_t GetInterestRate(bool wholeCents=false);
-
+int GetCoinbaseMaturity();
 
 
 
