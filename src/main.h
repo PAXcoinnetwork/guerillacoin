@@ -26,7 +26,7 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 6000;
-static const int NEW_MATURITY_HEIGHT = 6500;
+static const int NEW_MATURITY_HEIGHT = 6450;
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
@@ -126,7 +126,7 @@ const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfSta
 void StakeMiner(CWallet *pwallet);
 void ResendWalletTransactions(bool fForce = false);
 uint64_t GetInterestRate(bool wholeCents=false);
-int GetCoinbaseMaturity();
+int GetCoinbaseMaturity(int nHeight);
 
 
 
@@ -752,6 +752,8 @@ public:
     // >=1 : this many blocks deep in the main chain
     int GetDepthInMainChain(CBlockIndex* &pindexRet) const;
     int GetDepthInMainChain() const { CBlockIndex *pindexRet; return GetDepthInMainChain(pindexRet); }
+    int GetHeightInMainChain(CBlockIndex* &pindexRet) const;
+    int GetHeightInMainChain() const { CBlockIndex *pindexRet; return GetHeightInMainChain(pindexRet); }
     bool IsInMainChain() const { CBlockIndex *pindexRet; return GetDepthInMainChainINTERNAL(pindexRet) > 0; }
     int GetBlocksToMaturity() const;
     bool AcceptToMemoryPool(CTxDB& txdb, bool fCheckInputs=true);

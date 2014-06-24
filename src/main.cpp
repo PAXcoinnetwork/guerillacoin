@@ -42,11 +42,11 @@ CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 unsigned int nTargetSpacing = 1 * 60; // 1 minute
 unsigned int nStakeMinAge = 8 * 60 * 60; // 8 hours
-unsigned int nStakeMaxAge = 365 * 24 * 60 * 60; // 365 days
+unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 500;
-int nNewCoinbaseMaturity = 70;
+int nNewCoinbaseMaturity = 100;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 
@@ -78,23 +78,28 @@ int64_t nMinimumInputValue = 0;
 
 extern enum Checkpoints::CPMode CheckpointsMode;
 
+
+int GetCoinbaseMaturity(int nHeight)
+{
+    if (fTestNet)
+        return 10;
+    // ramp down maturity
+    else if (nHeight >= NEW_MATURITY_HEIGHT + 35)
+        return nNewCoinbaseMaturity;
+    else if (nHeight >= NEW_MATURITY_HEIGHT + 16)
+        return 150;
+    else if (nHeight >= NEW_MATURITY_HEIGHT)
+        return 230;
+    else
+        return nCoinbaseMaturity;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // dispatching functions
 //
 
 // These functions dispatch to one or all registered wallets
-
-
-int GetCoinbaseMaturity()
-{
-    if (fTestNet)
-        return 10;
-    else if (pindexBest->nHeight >= NEW_MATURITY_HEIGHT)
-        return nNewCoinbaseMaturity;
-    else
-        return nCoinbaseMaturity;
-}
 
 void RegisterWallet(CWallet* pwalletIn)
 {
@@ -822,11 +827,18 @@ int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
     return nResult;
 }
 
+int CMerkleTx::GetHeightInMainChain(CBlockIndex* &pindexRet) const
+{
+    return pindexBest->nHeight - GetDepthInMainChain(pindexRet) + 1;
+}
+
 int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (GetCoinbaseMaturity()+10) - GetDepthInMainChain());
+    
+    int height = GetHeightInMainChain();
+    return max(0, (GetCoinbaseMaturity(height)+10) - GetDepthInMainChain());
 }
 
 
@@ -1354,7 +1366,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 
             // If prev is coinbase or coinstake, check that it's matured
             if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
-                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < GetCoinbaseMaturity(); pindex = pindex->pprev)
+                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < GetCoinbaseMaturity(pindexBlock->nHeight); pindex = pindex->pprev)
                     if (pindex->nBlockPos == txindex.pos.nBlockPos && pindex->nFile == txindex.pos.nFile)
                         return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", pindexBlock->nHeight - pindex->nHeight);
 
