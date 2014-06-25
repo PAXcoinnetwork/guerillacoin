@@ -2071,9 +2071,6 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
 
     if (IsProofOfStake())
     {
-        if (pindexBest->nHeight < LAST_POW_BLOCK)
-            return DoS(100, error("CheckBlock() : proof-of-stake blocks not accepted until after proof-of-work phase"));
-
         // Coinbase output should be empty if proof-of-stake block
         if (vtx[0].vout.size() != 1 || !vtx[0].vout[0].IsEmpty())
             return DoS(100, error("CheckBlock() : coinbase output not empty for proof-of-stake block"));
