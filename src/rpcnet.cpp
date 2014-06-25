@@ -74,28 +74,32 @@ Value getpeerinfo(const Array& params, bool fHelp)
 // ThreadRPCServer: holds cs_main and acquiring cs_vSend in alert.RelayTo()/PushMessage()/BeginMessage()
 Value sendalert(const Array& params, bool fHelp)
 {
-    if (fHelp || params.size() < 6)
+    if (fHelp || params.size() < 7)
         throw runtime_error(
-            "sendalert <message> <privatekey> <minver> <maxver> <priority> <id> [cancelupto]\n"
+            "sendalert <message> <privatekey> <minver> <maxver> <priority> <subver> <id> [cancelupto]\n"
             "<message> is the alert text message\n"
             "<privatekey> is hex string of alert master private key\n"
             "<minver> is the minimum applicable internal client version\n"
             "<maxver> is the maximum applicable internal client version\n"
             "<priority> is integer priority number\n"
+            "\'[<subver1>, <subver2>,..,<subverN>]\' application version that this applies to\n"
             "<id> is the alert id\n"
             "[cancelupto] cancels all alert id's up to this number\n"
             "Returns true or false.");
 
     CAlert alert;
     CKey key;
+    Array subVersions = params[5].get_array();
 
     alert.strStatusBar = params[0].get_str();
     alert.nMinVer = params[2].get_int();
     alert.nMaxVer = params[3].get_int();
     alert.nPriority = params[4].get_int();
-    alert.nID = params[5].get_int();
-    if (params.size() > 6)
-        alert.nCancel = params[6].get_int();
+    alert.nID = params[6].get_int();
+    if (params.size() > 7)
+        alert.nCancel = params[7].get_int();
+    BOOST_FOREACH(Value ver, subVersions)
+        alert.setSubVer.insert(FormatSubVersion(CLIENT_NAME, ver.get_int()));
     alert.nVersion = PROTOCOL_VERSION;
     alert.nRelayUntil = GetAdjustedTime() + 365*24*60*60;
     alert.nExpiration = GetAdjustedTime() + 365*24*60*60;
@@ -124,6 +128,7 @@ Value sendalert(const Array& params, bool fHelp)
     result.push_back(Pair("nVersion", alert.nVersion));
     result.push_back(Pair("nMinVer", alert.nMinVer));
     result.push_back(Pair("nMaxVer", alert.nMaxVer));
+    result.push_back(Pair("SubVer", alert.GetSubVerString()));
     result.push_back(Pair("nPriority", alert.nPriority));
     result.push_back(Pair("nID", alert.nID));
     if (alert.nCancel > 0)
