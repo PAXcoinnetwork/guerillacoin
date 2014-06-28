@@ -83,6 +83,8 @@ extern CCriticalSection cs_setpwalletRegistered;
 extern std::set<CWallet*> setpwalletRegistered;
 extern unsigned char pchMessageStart[4];
 extern std::map<uint256, CBlock*> mapOrphanBlocks;
+extern int nNewInterestFork;
+extern int nLastPowBlock;
 
 // Settings
 extern int64_t nTransactionFee;

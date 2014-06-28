@@ -50,6 +50,9 @@ int nNewCoinbaseMaturity = 100;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
 
+int nLastPowBlock = LAST_POW_BLOCK;
+int nNewInterestFork = NEW_INTEREST_FORK;
+
 uint256 nBestChainTrust = 0;
 uint256 nBestInvalidTrust = 0;
 
@@ -997,7 +1000,7 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64_t GetProofOfWorkReward(int64_t nFees)
 {
     int64_t nSubsidy = 0;
-    if(pindexBest->nHeight <= LAST_POW_BLOCK)
+    if(pindexBest->nHeight <= nLastPowBlock)
         nSubsidy = 750 * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -1014,8 +1017,7 @@ uint64_t GetInterestRate(const CBlockIndex* pindexLast, bool wholeCents)
     double weight;
     
     // Post fork to new weight calculation
-    if (pindexLast && (pindexLast->nHeight > NEW_INTEREST_FORK ||
-                       (fTestNet && pindexLast->nHeight > NEW_INTEREST_FORK_TESTNET)))
+    if (pindexLast && pindexLast->nHeight > nNewInterestFork)
         weight =  GetPoSKernelPS(pindexLast);
     else
         weight =  GetPoSKernelPS();
@@ -2156,10 +2158,10 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
-    if (IsProofOfStake() && nHeight < LAST_POW_BLOCK)
-        return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d <= %d", nHeight, LAST_POW_BLOCK));
+    if (IsProofOfStake() && nHeight < nLastPowBlock)
+        return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d <= %d", nHeight, nLastPowBlock));
     
-    if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
+    if (IsProofOfWork() && nHeight > nLastPowBlock)
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
@@ -2522,6 +2524,8 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[3] = 0xef;
         bnProofOfWorkLimit = bnProofOfWorkLimitTestNet; // 16 bits PoW target limit for testnet
         nStakeMinAge = 1 * 60 * 60; // test net min age is 1 hour
+        nLastPowBlock = LAST_POW_BLOCK_TESTNET;
+        nNewInterestFork = NEW_INTEREST_FORK_TESTNET;
     }
 
     //
