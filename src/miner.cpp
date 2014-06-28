@@ -533,7 +533,7 @@ void StakeMiner(CWallet *pwallet)
         if (fShutdown)
             return;
 
-        while (pindexBest->nHeight < LAST_POW_BLOCK || (fTestNet && pindexBest->nHeight < LAST_POW_BLOCK_TESTNET)) {
+        while (pindexBest->nHeight < LAST_POW_BLOCK) {
             MilliSleep(1000);
             if (fShutdown)
                 return;

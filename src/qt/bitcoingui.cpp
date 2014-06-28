@@ -981,7 +981,7 @@ void BitcoinGUI::updateWeight()
 
 void BitcoinGUI::updateStakingIcon()
 {
-    if (pindexBest != NULL && (pindexBest->nHeight < LAST_POW_BLOCK || (fTestNet && pindexBest->nHeight < LAST_POW_BLOCK_TESTNET)))
+    if (pindexBest != NULL && pindexBest->nHeight < LAST_POW_BLOCK)
     {
         labelStakingIcon->setToolTip(tr("Not staking because blockchain is still in the proof-of-work phase"));
         overviewPage->setStrength(0);

@@ -997,7 +997,7 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64_t GetProofOfWorkReward(int64_t nFees)
 {
     int64_t nSubsidy = 0;
-    if(pindexBest->nHeight <= LAST_POW_BLOCK || (fTestNet && pindexBest->nHeight <= LAST_POW_BLOCK_TESTNET))
+    if(pindexBest->nHeight <= LAST_POW_BLOCK)
         nSubsidy = 750 * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -2156,10 +2156,10 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
-    if (IsProofOfStake() && (nHeight < LAST_POW_BLOCK || (fTestNet && nHeight < LAST_POW_BLOCK_TESTNET)))
+    if (IsProofOfStake() && nHeight < LAST_POW_BLOCK)
         return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d <= %d", nHeight, LAST_POW_BLOCK));
     
-    if (IsProofOfWork() && (nHeight > LAST_POW_BLOCK || (fTestNet && nHeight > LAST_POW_BLOCK_TESTNET)))
+    if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
