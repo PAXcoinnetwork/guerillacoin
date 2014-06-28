@@ -74,13 +74,14 @@ double GetPoWMHashPS()
     return GetDifficulty() * 4294.967296 / nTargetSpacingWork;
 }
 
-uint64_t GetPoSKernelPS()
+uint64_t GetPoSKernelPS(const CBlockIndex* pindex)
 {
     int nPoSInterval = 72;
     int nStakesHandled = 0, nStakesTime = 0;
     
-    CBlockIndex* pindex = pindexBest;
-    CBlockIndex* pindexPrevStake = NULL;
+    if(pindex == NULL)
+        pindex = GetLastBlockIndex(pindexBest, true);
+    const CBlockIndex* pindexPrevStake = NULL;
     CBigNum dStakeKernelsTriedAvg(0);
     CBigNum currentKernelTarget(0);
     

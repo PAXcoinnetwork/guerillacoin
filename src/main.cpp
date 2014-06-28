@@ -1009,9 +1009,17 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 /** Get the current yearly stake interest rate in cents (1 CENT = 1%)
  Minimum rate is 1%
  */
-uint64_t GetInterestRate(bool wholeCents)
+uint64_t GetInterestRate(const CBlockIndex* pindexLast, bool wholeCents)
 {
-    double weight = GetPoSKernelPS();
+    double weight;
+    
+    // Post fork to new weight calculation
+    if (pindexLast && (pindexLast->nHeight > NEW_INTEREST_FORK ||
+                       (fTestNet && pindexLast->nHeight > NEW_INTEREST_FORK_TESTNET)))
+        weight =  GetPoSKernelPS(pindexLast);
+    else
+        weight =  GetPoSKernelPS();
+
     uint64_t rate = COIN_YEAR_REWARD;
     if(weight > 16384)
         rate = std::max(COIN_YEAR_REWARD,
@@ -1021,11 +1029,13 @@ uint64_t GetInterestRate(bool wholeCents)
 }
 
 // miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
+int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, const CBlockIndex* pindexLast)
 {
-    int64_t nSubsidy = nCoinAge * GetInterestRate() * 33 / (365 * 33 + 8);
+    if (pindexLast == NULL) // genesis block or invalid pointer
+        return 0;
+    int64_t nSubsidy = nCoinAge * GetInterestRate(pindexLast) * 33 / (365 * 33 + 8);
     
-    if(pindexBest->nMoneySupply + nSubsidy > MAX_MONEY)
+    if (pindexLast->nMoneySupply + nSubsidy > MAX_MONEY)
         return 0;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -1616,7 +1626,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!vtx[1].GetCoinAge(txdb, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
 
-        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees, pindex);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));

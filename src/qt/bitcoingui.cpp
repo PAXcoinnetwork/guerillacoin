@@ -63,7 +63,7 @@
 
 extern CWallet* pwalletMain;
 extern int64_t nLastCoinStakeSearchInterval;
-uint64_t GetPoSKernelPS();
+uint64_t GetPoSKernelPS(const CBlockIndex* pindex);
 
 BitcoinGUI::BitcoinGUI(QWidget *parent):
     QMainWindow(parent),
@@ -976,7 +976,7 @@ void BitcoinGUI::updateWeight()
 
     // TODO: refactor this
     overviewPage->setStrength(GetStrength(nWeight));
-    overviewPage->setInterestRate(GetInterestRate(true));
+    overviewPage->setInterestRate(GetInterestRate(GetLastBlockIndex(pindexBest, true), true));
 }
 
 void BitcoinGUI::updateStakingIcon()

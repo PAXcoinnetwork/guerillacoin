@@ -26,7 +26,10 @@ class CRequestTracker;
 class CNode;
 
 static const int LAST_POW_BLOCK = 6000;
+static const int LAST_POW_BLOCK_TESTNET = 950;
 static const int NEW_MATURITY_HEIGHT = 6450;
+static const int NEW_INTEREST_FORK = 20000;
+static const int NEW_INTEREST_FORK_TESTNET = 1200;
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
@@ -114,7 +117,7 @@ bool LoadExternalBlockFile(FILE* fileIn);
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);
 int64_t GetProofOfWorkReward(int64_t nFees);
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees);
+int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, const CBlockIndex* pindexLast);
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime);
 unsigned int ComputeMinStake(unsigned int nBase, int64_t nTime, unsigned int nBlockTime);
 int GetNumBlocksOfPeers();
@@ -125,7 +128,7 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan);
 const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake);
 void StakeMiner(CWallet *pwallet);
 void ResendWalletTransactions(bool fForce = false);
-uint64_t GetInterestRate(bool wholeCents=false);
+uint64_t GetInterestRate(const CBlockIndex* pindexLast, bool wholeCents=false);
 int GetCoinbaseMaturity(int nHeight);
 
 
