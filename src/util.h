@@ -642,7 +642,7 @@ template <typename T>
 inline T AbsDiff(T a, T b)
 {
     T c = a > b ? a - b : b - a;
-    return c >= 0 ? c : -c;
+    return c > 0 ? c : -c;
 }
 
 #endif
