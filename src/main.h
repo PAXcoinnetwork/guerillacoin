@@ -28,7 +28,7 @@ class CNode;
 static const int LAST_POW_BLOCK = 6000;
 static const int LAST_POW_BLOCK_TESTNET = 1650;
 static const int NEW_MATURITY_HEIGHT = 6450;
-static const int NEW_INTEREST_FORK = 20000;
+static const int NEW_INTEREST_FORK = 15100;
 static const int NEW_INTEREST_FORK_TESTNET = 1700;
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;

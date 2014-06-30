@@ -5,7 +5,7 @@ SetCompressor /SOLID lzma
 
 # General Symbol Definitions
 !define REGKEY "SOFTWARE\$(^Name)"
-!define VERSION 1.0.1.5
+!define VERSION 1.0.1.6
 !define COMPANY "Guerillacoin project"
 !define URL http://www.guerillacoin.com/
 
