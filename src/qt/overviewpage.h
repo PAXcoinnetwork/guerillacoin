@@ -2,10 +2,14 @@
 #define OVERVIEWPAGE_H
 
 #include <QWidget>
+#include <stdint.h>
 
 QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
+
+static const QString strBarTooltip = "Proof of strength - what proportion of the total network weight belongs to you.";
+typedef std::pair<QString, uint8_t> strengthlevel;
 
 namespace Ui {
     class OverviewPage;
@@ -28,19 +32,25 @@ public:
 
 public slots:
     void setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void updateStrength();
     void setStrength(double strength);
+    void setWeight(double nWeight);
+    void setNetworkWeight(double nWeight);
     void setInterestRate(qint64 interest);
 
 signals:
     void transactionClicked(const QModelIndex &index);
 
 private:
+    double getNextLevelEstimate(double strength);
     Ui::OverviewPage *ui;
     WalletModel *model;
     qint64 currentBalance;
     qint64 currentStake;
     qint64 currentUnconfirmedBalance;
     qint64 currentImmatureBalance;
+    double weight;
+    double networkWeight;
     double currentStrength;
     qint64 currentInterestRate;
 

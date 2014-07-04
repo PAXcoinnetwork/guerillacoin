@@ -11,6 +11,7 @@
 #include "util.h"
 #include <QAbstractItemDelegate>
 #include <QPainter>
+#include <boost/assign/list_of.hpp>
 
 #define DECORATION_SIZE 64
 #define NUM_ITEMS 3
@@ -176,71 +177,100 @@ void OverviewPage::setModel(WalletModel *model)
     updateDisplayUnit();
 }
 
+const std::vector<strengthlevel> levels =
+    boost::assign::list_of<strengthlevel>
+        ("Very Weak", 0)
+        ("Lazy", 10)
+        ("Weak", 20)
+        ("Noob", 25)
+        ("Miner", 35)
+        ("Investor", 40)
+        ("Accomplished", 45)
+        ("Hardcore", 55)
+        ("Awesome", 65)
+        ("Whale", 75)
+        ("King Midas", 100);
+
+const double levelreq[] = {0, 0.00001, 0.0001, 0.001, 0.02, 0.05, 0.01, 0.15, 0.2, 0.25, 1.0};
+
+int8_t getStrengthLevel(double strength)
+{
+    uint16_t level = 0;
+    for(uint8_t i = 0; i < ARRAYLEN(levelreq); i++)
+    {
+        if(strength <= levelreq[i] && strength > 0)
+        {
+            level = i;
+            break;
+        }
+    }
+    
+    return level;
+}
+
+double getNextLevelReq(double strength)
+{
+    return levelreq[getStrengthLevel(strength) + 1];
+}
+
+double GetStrength(double nWeight, double networkWeight)
+{
+    if (nWeight == 0 && networkWeight == 0)
+        return 0;
+    return nWeight / (static_cast<double>(nWeight) + networkWeight);
+}
+
+double OverviewPage::getNextLevelEstimate(double strength)
+{
+    double nextLevel = getNextLevelReq(strength);
+    if(networkWeight == 0)
+        return nextLevel;
+    return (nextLevel * networkWeight)/(1 - networkWeight) - weight;
+}
+
 void OverviewPage::setStrength(double strength)
 {
-    QString strFormat;
-    if (strength == 0)
+    int8_t levelIdx = getStrengthLevel(strength);
+    QString name;
+    QString tooltip = strBarTooltip;
+    int8_t value;
+
+    if(levelIdx < 0)
     {
-        strFormat = "Very weak";
-        currentStrength = 0;
+        name = "Error!";
+        value = 0;
+    } else {
+        strengthlevel level = levels[levelIdx];
+        name = level.first;
+        value = level.second;
+        if (levelIdx < 10)
+        {
+            strengthlevel nextLevel = levels[levelIdx + 1];
+            tooltip.append(QString(" Next level: %1, in %2 coins.")
+                           .arg(nextLevel.first)
+                           .arg(QString::number(getNextLevelEstimate(strength), 'f', 8)));
+        }
     }
-    else if(strength < 0.00001)
-    {
-        strFormat = "Lazy";
-        currentStrength = 10;
-    }
-    else if (strength < 0.0001)
-    {
-        strFormat = "Weak";
-        currentStrength = 20;
-    }
-    else if (strength < 0.001)
-    {
-        strFormat = "Noob";
-        currentStrength = 25;
-    }
-    else if (strength < 0.02)
-    {
-        strFormat = "Miner";
-        currentStrength = 35;
-    }
-    else if (strength < 0.05)
-    {
-        strFormat = "Investor";
-        currentStrength = 40;
-    }
-    else if (strength < 0.1)
-    {
-        strFormat = "Accomplished";
-        currentStrength = 45;
-    }
-    else if (strength < 0.15)
-    {
-        strFormat = "Hardcore";
-        currentStrength = 55;
-    }
-    else if (strength < 0.20)
-    {
-        strFormat = "Awesome";
-        currentStrength = 65;
-    }
-    else if (strength < 0.25)
-    {
-        strFormat = "Whale";
-        currentStrength = 78;
-    }
-    else if (strength <= 1.0)
-    {
-        strFormat = "King Midas";
-        currentStrength = 100;
-    }
-    else
-    {
-        strFormat = "Error!";
-    }
-    ui->strengthBar->setValue(currentStrength);
-    ui->strengthBar->setFormat(strFormat);
+    
+    ui->strengthBar->setFormat(name);
+    ui->strengthBar->setValue(value);
     ui->strengthBar->setTextVisible(true);
+    ui->strengthBar->setToolTip(tooltip);
+}
+
+void OverviewPage::updateStrength()
+{
+    setStrength(GetStrength(weight, networkWeight));
+}
+
+void OverviewPage::setWeight(double nWeight)
+{
+    weight = nWeight;
+}
+
+void OverviewPage::setNetworkWeight(double nWeight)
+{
+    weight = nWeight;
 }
 
 void OverviewPage::setInterestRate(qint64 interest)

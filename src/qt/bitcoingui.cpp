@@ -950,14 +950,6 @@ void BitcoinGUI::toggleHidden()
     showNormalIfMinimized(true);
 }
 
-double GetStrength(uint64_t nWeight)
-{
-    double networkWeight = GetPoSKernelPS();
-    if (nWeight == 0 && networkWeight == 0)
-        return 0;
-    return nWeight / (static_cast<double>(nWeight) + networkWeight);
-}
-
 void BitcoinGUI::updateWeight()
 {
     if (!pwalletMain)
@@ -974,8 +966,6 @@ void BitcoinGUI::updateWeight()
     uint64_t nMinWeight = 0, nMaxWeight = 0;
     pwalletMain->GetStakeWeight(*pwalletMain, nMinWeight, nMaxWeight, nWeight);
 
-    // TODO: refactor this
-    overviewPage->setStrength(GetStrength(nWeight));
     overviewPage->setInterestRate(GetInterestRate(GetLastBlockIndex(pindexBest, true), true));
 }
 
@@ -989,10 +979,14 @@ void BitcoinGUI::updateStakingIcon()
     }
     updateWeight();
 
+
     if (nLastCoinStakeSearchInterval && nWeight)
     {
         uint64_t nNetworkWeight = GetPoSKernelPS();
         unsigned nEstimateTime = nTargetSpacing * nNetworkWeight / nWeight;
+        overviewPage->setWeight(nWeight);
+        overviewPage->setNetworkWeight(nNetworkWeight);
+        overviewPage->updateStrength();
 
         QString text;
         if (nEstimateTime < 60)
