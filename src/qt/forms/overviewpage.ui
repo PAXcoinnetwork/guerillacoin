@@ -950,7 +950,7 @@ QProgressBar {
          <bool>false</bool>
         </property>
         <property name="format">
-         <string>Loading...</string>
+         <string>Not staking</string>
         </property>
        </widget>
       </item>

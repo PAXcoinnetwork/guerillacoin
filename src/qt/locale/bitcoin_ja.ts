@@ -4,12 +4,12 @@
     <message>
         <location filename="../forms/aboutdialog.ui" line="+14"/>
         <source>About Guerillacoin</source>
-        <translation>ブラックコインについて</translation>
+        <translation>ゲリラコインについて</translation>
     </message>
     <message>
         <location line="+39"/>
         <source>&lt;b&gt;Guerillacoin&lt;/b&gt; version</source>
-        <translation>&lt;b&gt;ブラックコイン&lt;/b&gt;バージョン</translation>
+        <translation>&lt;b&gt;ゲリラコイン&lt;/b&gt;バージョン</translation>
     </message>
     <message>
         <location line="+41"/>
@@ -66,7 +66,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="-46"/>
         <source>These are your Guerillacoin addresses for receiving payments. You may want to give a different one to each sender so you can keep track of who is paying you.</source>
-        <translation>これは支払いを受けるためのブラックコインのアドレス。支払い管理をするのため、各送信者へ、それぞれのアドレスを伝えたほうがいいです。</translation>
+        <translation>これは支払いを受けるためのゲリラコインのアドレス。支払い管理をするのため、各送信者へ、それぞれのアドレスを伝えたほうがいいです。</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -264,7 +264,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="-58"/>
         <source>Guerillacoin will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your coins from being stolen by malware infecting your computer.</source>
-        <translation>ただいま、暗号化手順を完成するため、ブラックコインQTは閉じます。尚、ウォレットを暗号化をされたにしても、PCのウイルスから盗難防止の報償できないことを、ご理解をお願い足します。</translation>
+        <translation>ただいま、暗号化手順を完成するため、ゲリラコインQTは閉じます。尚、ウォレットを暗号化をされたにしても、PCのウイルスから盗難防止の報償できないことを、ご理解をお願い足します。</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -378,7 +378,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="+6"/>
         <source>Show information about Guerillacoin</source>
-        <translation>ブラックコインの情報を表示</translation>
+        <translation>ゲリラコインの情報を表示</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -428,12 +428,12 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="-64"/>
         <source>Send coins to a Guerillacoin address</source>
-        <translation>ブラックコインアドレスへコインを送る</translation>
+        <translation>ゲリラコインアドレスへコインを送る</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Modify configuration options for Guerillacoin</source>
-        <translation>ブラックコインの設定を変化する</translation>
+        <translation>ゲリラコインの設定を変化する</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -473,7 +473,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="-202"/>
         <source>Guerillacoin</source>
-        <translation>ブラックコイン</translation>
+        <translation>ゲリラコイン</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -483,7 +483,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="+180"/>
         <source>&amp;About Guerillacoin</source>
-        <translation>ブラックコインについて</translation>
+        <translation>ゲリラコインについて</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -540,12 +540,12 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
         <location line="+0"/>
         <location line="+60"/>
         <source>Guerillacoin client</source>
-        <translation>ブラックコインクライアントソフトウェア</translation>
+        <translation>ゲリラコインクライアントソフトウェア</translation>
     </message>
     <message numerus="yes">
         <location line="+75"/>
         <source>%n active connection(s) to Guerillacoin network</source>
-        <translation><numerusform>ブラックコインネットワークへの%n アクティブな接続</numerusform></translation>
+        <translation><numerusform>ゲリラコインネットワークへの%n アクティブな接続</numerusform></translation>
     </message>
     <message>
         <location line="+40"/>
@@ -585,7 +585,7 @@ MIT/X11 ソフトウェア ライセンスの下で配布されています。�
     <message>
         <location line="-312"/>
         <source>About Guerillacoin card</source>
-        <translation>ブラックコインカードについて</translation>
+        <translation>ゲリラコインカードについて</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -669,7 +669,7 @@ Address: %4
         <location line="-15"/>
         <location line="+15"/>
         <source>URI can not be parsed! This can be caused by an invalid Guerillacoin address or malformed URI parameters.</source>
-        <translation>URIのパーズができませんでした！。原因は無効なブラックコインアドレスか不正なURIパラメータ。</translation>
+        <translation>URIのパーズができませんでした！。原因は無効なゲリラコインアドレスか不正なURIパラメータ。</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -1063,7 +1063,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-5"/>
         <source>The entered address &quot;%1&quot; is not a valid Guerillacoin address.</source>
-        <translation>入力されたアドレス &quot;%1&quot; 、有効なブラックコインアドレスではない。</translation>
+        <translation>入力されたアドレス &quot;%1&quot; 、有効なゲリラコインアドレスではない。</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1082,7 +1082,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location filename="../guiutil.cpp" line="+420"/>
         <location line="+12"/>
         <source>Guerillacoin-Qt</source>
-        <translation>ブラックコインQT</translation>
+        <translation>ゲリラコインQT</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -1155,12 +1155,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+31"/>
         <source>Automatically start Guerillacoin after logging in to the system.</source>
-        <translation>システムのログイン次第、自動的にブラックコインをスタート。</translation>
+        <translation>システムのログイン次第、自動的にゲリラコインをスタート。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;Start Guerillacoin on system login</source>
-        <translation>システムログイン次第、ブラックコインをスタート</translation>
+        <translation>システムログイン次第、ゲリラコインをスタート</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1180,7 +1180,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+6"/>
         <source>Automatically open the Guerillacoin client port on the router. This only works when your router supports UPnP and it is enabled.</source>
-        <translation>自動的にルーターでブラックコインクライエントソフトウェアのポートを開く。ルーターはUPnPのサポートあり、UPnPを有効にするならできる。</translation>
+        <translation>自動的にルーターでゲリラコインクライエントソフトウェアのポートを開く。ルーターはUPnPのサポートあり、UPnPを有効にするならできる。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1190,7 +1190,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>Connect to the Guerillacoin network through a SOCKS proxy (e.g. when connecting through Tor).</source>
-        <translation>ブラックコインのネットワークへSOCKSプロキシで接続する（例：TORで接続するばい）</translation>
+        <translation>ゲリラコインのネットワークへSOCKSプロキシで接続する（例：TORで接続するばい）</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1280,7 +1280,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+9"/>
         <source>Whether to show Guerillacoin addresses in the transaction list or not.</source>
-        <translation>処理の歴史でブラックコインのアドレスを表示する／しない。</translation>
+        <translation>処理の歴史でゲリラコインのアドレスを表示する／しない。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1327,7 +1327,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="-9"/>
         <location line="+9"/>
         <source>This setting will take effect after restarting Guerillacoin.</source>
-        <translation>この設定はブラックコインをリスタートした後に有効する。</translation>
+        <translation>この設定はゲリラコインをリスタートした後に有効する。</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1346,7 +1346,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location line="+33"/>
         <location line="+231"/>
         <source>The displayed information may be out of date. Your wallet automatically synchronizes with the Guerillacoin network after a connection is established, but this process has not completed yet.</source>
-        <translation>表示されている情報は時間遅れている。接続したら、ウォレットは自動的にブラックコインネットワークと同期しますが過程は完了してません。</translation>
+        <translation>表示されている情報は時間遅れている。接続したら、ウォレットは自動的にゲリラコインネットワークと同期しますが過程は完了してません。</translation>
     </message>
     <message>
         <location line="-160"/>
@@ -1562,7 +1562,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+7"/>
         <source>Show the Guerillacoin-Qt help message to get a list with possible Guerillacoin command-line options.</source>
-        <translation>ブラックコインQTのコマンドラインのヘルプ情報を表示する。</translation>
+        <translation>ゲリラコインQTのコマンドラインのヘルプ情報を表示する。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1582,12 +1582,12 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="-104"/>
         <source>Guerillacoin - Debug window</source>
-        <translation>ブラックコイン：デバッグウインドウ</translation>
+        <translation>ゲリラコイン：デバッグウインドウ</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Guerillacoin Core</source>
-        <translation>ブラックコインコア</translation>
+        <translation>ゲリラコインコア</translation>
     </message>
     <message>
         <location line="+279"/>
@@ -1607,7 +1607,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../rpcconsole.cpp" line="-33"/>
         <source>Welcome to the Guerillacoin RPC console.</source>
-        <translation>ブラックコインRPCコンソールへようこそ。</translation>
+        <translation>ゲリラコインRPCコンソールへようこそ。</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1766,7 +1766,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../sendcoinsdialog.cpp" line="-173"/>
         <source>Enter a Guerillacoin address (e.g. GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</source>
-        <translation>ブラックコインアドレスの入力 (例；GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
+        <translation>ゲリラコインアドレスの入力 (例；GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1866,7 +1866,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+251"/>
         <source>WARNING: Invalid Guerillacoin address</source>
-        <translation>警告：無効なブラックコインアドレス</translation>
+        <translation>警告：無効なゲリラコインアドレス</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1940,7 +1940,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../sendcoinsentry.cpp" line="+1"/>
         <source>Enter a Guerillacoin address (e.g. GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</source>
-        <translation>ブラックコインアドレスの入力 (例；GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
+        <translation>ゲリラコインアドレスの入力 (例；GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
     </message>
 </context>
 <context>
@@ -2044,7 +2044,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
         <location filename="../signverifymessagedialog.cpp" line="+27"/>
         <location line="+3"/>
         <source>Enter a Guerillacoin address (e.g. GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</source>
-        <translation>ブラックコインのアドレスを入力(例：GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
+        <translation>ゲリラコインのアドレスを入力(例：GC8Lqitqh2uocq4srya3wZM6xMN9NAiKFr)</translation>
     </message>
     <message>
         <location line="-2"/>
@@ -2054,7 +2054,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+3"/>
         <source>Enter Guerillacoin signature</source>
-        <translation>ブラックコインのデジタル署名を入力</translation>
+        <translation>ゲリラコインのデジタル署名を入力</translation>
     </message>
     <message>
         <location line="+82"/>
@@ -2625,7 +2625,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location filename="../bitcoinstrings.cpp" line="+33"/>
         <source>Guerillacoin version</source>
-        <translation>ブラックコインバージョン</translation>
+        <translation>ゲリラコインバージョン</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2710,7 +2710,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+2"/>
         <source>Stake your coins to support network and gain reward (default: 1)</source>
-        <translation>褒奨金をもらうためと、ブラックコインネットワークをサッポートするために、コインを賭ける(デファルト：1)</translation>
+        <translation>褒奨金をもらうためと、ゲリラコインネットワークをサッポートするために、コインを賭ける(デファルト：1)</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -2810,7 +2810,7 @@ This label turns red, if the priority is smaller than &quot;medium&quot;.
     <message>
         <location line="+61"/>
         <source>Warning: Please check that your computer&apos;s date and time are correct! If your clock is wrong Guerillacoin will not work properly.</source>
-        <translation> 警告：コンピュータの日付と時間を調べてください。時間ずらしかったばい、ブラックコイン QTは正しく行動しない。</translation>
+        <translation> 警告：コンピュータの日付と時間を調べてください。時間ずらしかったばい、ゲリラコイン QTは正しく行動しない。</translation>
     </message>
     <message>
         <location line="-31"/>
@@ -3016,7 +3016,7 @@ rpcpassword=%s
 ユーザ名とパスワードは同じであってはなりません。
 ファイルは存在しないばいは、所有者が読み取り可能な専用のファイルを作成してください。
 問題のことを知らせるために、alertnotifyの設定を有効にしたほうがいいです。
-例：alertnotify=echo %%s | mail -s &quot;ブラックコイン警告&quot; admin@foo.com
+例：alertnotify=echo %%s | mail -s &quot;ゲリラコイン警告&quot; admin@foo.com
 </translation>
     </message>
     <message>
@@ -3142,12 +3142,12 @@ rpcpassword=%s
     <message>
         <location line="+1"/>
         <source>Cannot obtain a lock on data directory %s.  Guerillacoin is probably already running.</source>
-        <translation>%sディレクトリにをロックオンできない。ブラックコインQTは、もう発行してるでしょう。</translation>
+        <translation>%sディレクトリにをロックオンできない。ゲリラコインQTは、もう発行してるでしょう。</translation>
     </message>
     <message>
         <location line="-98"/>
         <source>Guerillacoin</source>
-        <translation>ブラックコイン</translation>
+        <translation>ゲリラコイン</translation>
     </message>
     <message>
         <location line="+140"/>
@@ -3182,12 +3182,12 @@ rpcpassword=%s
     <message>
         <location line="+4"/>
         <source>Error loading wallet.dat: Wallet requires newer version of Guerillacoin</source>
-        <translation>wallet.dat 読み込みエラー: 　ブラックコインQTの最新バージョンが必要です</translation>
+        <translation>wallet.dat 読み込みエラー: 　ゲリラコインQTの最新バージョンが必要です</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Wallet needed to be rewritten: restart Guerillacoin to complete</source>
-        <translation>ウォレットのデータをリライトしなければならい：ブラックコインQTをリスタートしてください</translation>
+        <translation>ウォレットのデータをリライトしなければならい：ゲリラコインQTをリスタートしてください</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3257,7 +3257,7 @@ rpcpassword=%s
     <message>
         <location line="+122"/>
         <source>Unable to bind to %s on this computer. Guerillacoin is probably already running.</source>
-        <translation>このコンピューターで%sに結ぶことができなかった。ブラックコインQTは、もう発行してるでしょう。</translation>
+        <translation>このコンピューターで%sに結ぶことができなかった。ゲリラコインQTは、もう発行してるでしょう。</translation>
     </message>
     <message>
         <location line="-97"/>

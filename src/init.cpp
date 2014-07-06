@@ -497,7 +497,7 @@ bool AppInit2()
     // ********************************************************* Step 4: application initialization: dir lock, daemonize, pidfile, debug log
     // Sanity check
     if (!InitSanityCheck())
-        return InitError(_("Initialization sanity check failed. BlackCoin is shutting down."));
+        return InitError(_("Initialization sanity check failed. Guerillacoin is shutting down."));
 
     std::string strDataDir = GetDataDir().string();
     strWalletFileName = GetArg("-wallet", "wallet.dat");

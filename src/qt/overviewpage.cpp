@@ -224,7 +224,7 @@ double OverviewPage::getNextLevelEstimate(double strength)
 {
     double nextLevel = getNextLevelReq(strength);
     if(networkWeight == 0)
-        return nextLevel;
+        return 0;
     return (nextLevel * networkWeight)/(1 - networkWeight) - weight;
 }
 
@@ -239,11 +239,13 @@ void OverviewPage::setStrength(double strength)
     {
         name = "Error!";
         value = 0;
-    } else {
+    }
+    else
+    {
         strengthlevel level = levels[levelIdx];
         name = level.first;
         value = level.second;
-        if (levelIdx < 10)
+        if (levelIdx < 10 && networkWeight > 0)
         {
             strengthlevel nextLevel = levels[levelIdx + 1];
             tooltip.append(QString(" Next level: %1, in %2 coins.")
