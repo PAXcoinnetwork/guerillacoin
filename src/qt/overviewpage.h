@@ -28,6 +28,8 @@ public:
 
 public slots:
     void setBalance(qint64 balance, qint64 stake, qint64 unconfirmedBalance, qint64 immatureBalance);
+    void setStrength(double strength);
+    void setInterestRate(qint64 interest);
 
 signals:
     void transactionClicked(const QModelIndex &index);
@@ -39,6 +41,8 @@ private:
     qint64 currentStake;
     qint64 currentUnconfirmedBalance;
     qint64 currentImmatureBalance;
+    double currentStrength;
+    qint64 currentInterestRate;
 
     TxViewDelegate *txdelegate;
     TransactionFilterProxy *filter;

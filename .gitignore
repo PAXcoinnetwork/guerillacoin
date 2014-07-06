@@ -1,7 +1,7 @@
 src/*.exe
-src/blackcoin
-src/blackcoind
-src/test_blackcoin
+src/guerillacoin
+src/guerillacoind
+src/test_guerilla
 src/build.h
 .*.swp
 *.*~*
@@ -10,11 +10,11 @@ src/build.h
 *.orig
 *.o
 *.patch
-.blackcoin
+.guerilla
 #compilation and Qt preprocessor part
 *.qm
 Makefile
-blackcoin-qt
+guerilla-qt
 #resources cpp
 qrc_*.cpp
 #qt creator

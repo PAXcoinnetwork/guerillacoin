@@ -307,12 +307,12 @@ void RPCConsole::clear()
                 "table { }"
                 "td.time { color: #808080; padding-top: 3px; } "
                 "td.message { font-family: Monospace; font-size: 12px; } "
-                "td.cmd-request { color: #006060; } "
+                "td.cmd-request { color: #cca000; } "
                 "td.cmd-error { color: red; } "
-                "b { color: #006060; } "
+                "b { color: #cca000; } "
                 );
 
-    message(CMD_REPLY, (tr("Welcome to the BlackCoin RPC console.") + "<br>" +
+    message(CMD_REPLY, (tr("Welcome to the Guerillacoin RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and <b>Ctrl-L</b> to clear screen.") + "<br>" +
                         tr("Type <b>help</b> for an overview of available commands.")), true);
 }

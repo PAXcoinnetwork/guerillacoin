@@ -524,7 +524,7 @@ void StakeMiner(CWallet *pwallet)
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     // Make this thread recognisable as the mining thread
-    RenameThread("blackcoin-miner");
+    RenameThread("guerillacoin-miner");
 
     bool fTryToSync = true;
 
@@ -532,6 +532,12 @@ void StakeMiner(CWallet *pwallet)
     {
         if (fShutdown)
             return;
+
+        while (pindexBest->nHeight < LAST_POW_BLOCK) {
+            MilliSleep(1000);
+            if (fShutdown)
+                return;
+        }
 
         while (pwallet->IsLocked())
         {
@@ -579,4 +585,28 @@ void StakeMiner(CWallet *pwallet)
         else
             MilliSleep(nMinerSleep);
     }
+}
+
+
+void GenerateBitcoins(bool fGenerate, CWallet* pwallet)
+{
+    static boost::thread_group* minerThreads = NULL;
+    
+    int nThreads = GetArg("-genproclimit", -1);
+    if (nThreads < 0)
+        nThreads = boost::thread::hardware_concurrency();
+    
+    if (minerThreads != NULL)
+    {
+        minerThreads->interrupt_all();
+        delete minerThreads;
+        minerThreads = NULL;
+    }
+    
+    if (nThreads == 0 || !fGenerate)
+        return;
+    
+    minerThreads = new boost::thread_group();
+    for (int i = 0; i < nThreads; i++)
+        minerThreads->create_thread(boost::bind(&StakeMiner, pwallet));
 }
