@@ -216,7 +216,7 @@ void SetMockTime(int64_t nMockTimeIn);
 int64_t GetAdjustedTime();
 int64_t GetTimeOffset();
 std::string FormatFullVersion();
-std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments);
+std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments = std::vector<std::string>());
 void AddTimeData(const CNetAddr& ip, int64_t nTime);
 void runCommand(std::string strCommand);
 
@@ -642,7 +642,7 @@ template <typename T>
 inline T AbsDiff(T a, T b)
 {
     T c = a > b ? a - b : b - a;
-    return c >= 0 ? c : -c;
+    return c > 0 ? c : -c;
 }
 
 #endif

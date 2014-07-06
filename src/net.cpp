@@ -1144,6 +1144,7 @@ static const char *strMainNetDNSSeed[][2] = {
     {"seed3.guerillacoin.com", "seed3.guerillacoin.com"},
     {"seed4.guerillacoin.com", "seed4.guerillacoin.com"},
     {"seed5.guerillacoin.com", "seed5.guerillacoin.com"},
+    {"seed6.guerillacoin.com", "seed6.guerillacoin.com"},
     {NULL, NULL}
 };
 
@@ -1218,7 +1219,7 @@ void ThreadDNSAddressSeed2(void* parg)
 
 unsigned int pnSeed[] =
 {
-    0x50f085f1, 0x5f5506a8, 0xbce2ae6e, 0xbce297ba, 0xbce2ebf0
+    0x50f085f1, 0x5f5506a8, 0xbce2ae6e, 0xbce297ba, 0xbce2ebf0, 0x6883e6da
 };
 
 void DumpAddresses()

@@ -84,6 +84,14 @@ void CUnsignedAlert::print() const
     printf("%s", ToString().c_str());
 }
 
+std::string CUnsignedAlert::GetSubVerString() const
+{
+    std::string strSetSubVer;
+    BOOST_FOREACH(std::string str, setSubVer)
+    strSetSubVer += "\"" + str + "\" ";
+    return strSetSubVer;
+}
+
 void CAlert::SetNull()
 {
     CUnsignedAlert::SetNull();

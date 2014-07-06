@@ -42,12 +42,16 @@ CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 unsigned int nTargetSpacing = 1 * 60; // 1 minute
 unsigned int nStakeMinAge = 8 * 60 * 60; // 8 hours
-unsigned int nStakeMaxAge = 365 * 24 * 60 * 60; // 365 days
+unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
 int nCoinbaseMaturity = 500;
+int nNewCoinbaseMaturity = 100;
 CBlockIndex* pindexGenesisBlock = NULL;
 int nBestHeight = -1;
+
+int nLastPowBlock = LAST_POW_BLOCK;
+int nNewInterestFork = NEW_INTEREST_FORK;
 
 uint256 nBestChainTrust = 0;
 uint256 nBestInvalidTrust = 0;
@@ -77,13 +81,28 @@ int64_t nMinimumInputValue = 0;
 
 extern enum Checkpoints::CPMode CheckpointsMode;
 
+
+int GetCoinbaseMaturity(int nHeight)
+{
+    if (fTestNet)
+        return 10;
+    // ramp down maturity
+    else if (nHeight >= NEW_MATURITY_HEIGHT + 35)
+        return nNewCoinbaseMaturity;
+    else if (nHeight >= NEW_MATURITY_HEIGHT + 16)
+        return 150;
+    else if (nHeight >= NEW_MATURITY_HEIGHT)
+        return 230;
+    else
+        return nCoinbaseMaturity;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 //
 // dispatching functions
 //
 
 // These functions dispatch to one or all registered wallets
-
 
 void RegisterWallet(CWallet* pwalletIn)
 {
@@ -811,11 +830,18 @@ int CMerkleTx::GetDepthInMainChain(CBlockIndex* &pindexRet) const
     return nResult;
 }
 
+int CMerkleTx::GetHeightInMainChain(CBlockIndex* &pindexRet) const
+{
+    return pindexBest->nHeight - GetDepthInMainChain(pindexRet) + 1;
+}
+
 int CMerkleTx::GetBlocksToMaturity() const
 {
     if (!(IsCoinBase() || IsCoinStake()))
         return 0;
-    return max(0, (nCoinbaseMaturity+10) - GetDepthInMainChain());
+    
+    int height = GetHeightInMainChain();
+    return max(0, (GetCoinbaseMaturity(height)+10) - GetDepthInMainChain());
 }
 
 
@@ -974,7 +1000,7 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 int64_t GetProofOfWorkReward(int64_t nFees)
 {
     int64_t nSubsidy = 0;
-    if(pindexBest->nHeight <= LAST_POW_BLOCK)
+    if(pindexBest->nHeight <= nLastPowBlock)
         nSubsidy = 750 * COIN;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -986,23 +1012,32 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 /** Get the current yearly stake interest rate in cents (1 CENT = 1%)
  Minimum rate is 1%
  */
-uint64_t GetInterestRate(bool wholeCents)
+uint64_t GetInterestRate(const CBlockIndex* pindexLast, bool wholeCents)
 {
-    double weight = GetPoSKernelPS();
+    double weight;
+    
+    // Post fork to new weight calculation
+    if (pindexLast && pindexLast->nHeight > nNewInterestFork)
+        weight = GetPoSKernelPS(pindexLast);
+    else
+        weight = GetPoSKernelPS();
+
     uint64_t rate = COIN_YEAR_REWARD;
     if(weight > 16384)
         rate = std::max(COIN_YEAR_REWARD,
                         std::min(static_cast<int64_t>(COIN_YEAR_REWARD * log(weight / 16384.0)),
-                                8*COIN_YEAR_REWARD));
+                                8 * COIN_YEAR_REWARD));
     return wholeCents ? 100 * rate : rate;
 }
 
 // miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
+int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, const CBlockIndex* pindexLast)
 {
-    int64_t nSubsidy = nCoinAge * GetInterestRate() * 33 / (365 * 33 + 8);
+    if (pindexLast == NULL) // genesis block or invalid pointer
+        return 0;
+    int64_t nSubsidy = nCoinAge * GetInterestRate(pindexLast) * 33 / (365 * 33 + 8);
     
-    if(pindexBest->nMoneySupply + nSubsidy > MAX_MONEY)
+    if (pindexLast->nMoneySupply + nSubsidy > MAX_MONEY)
         return 0;
 
     if (fDebug && GetBoolArg("-printcreation"))
@@ -1343,7 +1378,7 @@ bool CTransaction::ConnectInputs(CTxDB& txdb, MapPrevTx inputs, map<uint256, CTx
 
             // If prev is coinbase or coinstake, check that it's matured
             if (txPrev.IsCoinBase() || txPrev.IsCoinStake())
-                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < nCoinbaseMaturity; pindex = pindex->pprev)
+                for (const CBlockIndex* pindex = pindexBlock; pindex && pindexBlock->nHeight - pindex->nHeight < GetCoinbaseMaturity(pindexBlock->nHeight); pindex = pindex->pprev)
                     if (pindex->nBlockPos == txindex.pos.nBlockPos && pindex->nFile == txindex.pos.nFile)
                         return error("ConnectInputs() : tried to spend %s at depth %d", txPrev.IsCoinBase() ? "coinbase" : "coinstake", pindexBlock->nHeight - pindex->nHeight);
 
@@ -1593,7 +1628,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!vtx[1].GetCoinAge(txdb, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
 
-        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees);
+        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees, pindex ? pindex->pprev : NULL);
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
@@ -2048,9 +2083,6 @@ bool CBlock::CheckBlock(bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig) c
 
     if (IsProofOfStake())
     {
-        if (pindexBest->nHeight < LAST_POW_BLOCK)
-            return DoS(100, error("CheckBlock() : proof-of-stake blocks not accepted until after proof-of-work phase"));
-
         // Coinbase output should be empty if proof-of-stake block
         if (vtx[0].vout.size() != 1 || !vtx[0].vout[0].IsEmpty())
             return DoS(100, error("CheckBlock() : coinbase output not empty for proof-of-stake block"));
@@ -2126,10 +2158,10 @@ bool CBlock::AcceptBlock()
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
 
-    if (IsProofOfStake() && nHeight < LAST_POW_BLOCK)
-        return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d <= %d", nHeight, LAST_POW_BLOCK));
+    if (IsProofOfStake() && nHeight < nLastPowBlock)
+        return DoS(100, error("AcceptBlock() : reject proof-of-stake at height %d <= %d", nHeight, nLastPowBlock));
     
-    if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
+    if (IsProofOfWork() && nHeight > nLastPowBlock)
         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
 
     // Check proof-of-work or proof-of-stake
@@ -2492,7 +2524,8 @@ bool LoadBlockIndex(bool fAllowNew)
         pchMessageStart[3] = 0xef;
         bnProofOfWorkLimit = bnProofOfWorkLimitTestNet; // 16 bits PoW target limit for testnet
         nStakeMinAge = 1 * 60 * 60; // test net min age is 1 hour
-        nCoinbaseMaturity = 10; // test maturity is 10 blocks
+        nLastPowBlock = LAST_POW_BLOCK_TESTNET;
+        nNewInterestFork = NEW_INTEREST_FORK_TESTNET;
     }
 
     //

@@ -63,7 +63,7 @@
 
 extern CWallet* pwalletMain;
 extern int64_t nLastCoinStakeSearchInterval;
-uint64_t GetPoSKernelPS();
+uint64_t GetPoSKernelPS(const CBlockIndex* pindex);
 
 BitcoinGUI::BitcoinGUI(QWidget *parent):
     QMainWindow(parent),
@@ -976,12 +976,12 @@ void BitcoinGUI::updateWeight()
 
     // TODO: refactor this
     overviewPage->setStrength(GetStrength(nWeight));
-    overviewPage->setInterestRate(GetInterestRate(true));
+    overviewPage->setInterestRate(GetInterestRate(GetLastBlockIndex(pindexBest, true), true));
 }
 
 void BitcoinGUI::updateStakingIcon()
 {
-    if (pindexBest != NULL && pindexBest->nHeight < LAST_POW_BLOCK)
+    if (pindexBest != NULL && pindexBest->nHeight < nLastPowBlock)
     {
         labelStakingIcon->setToolTip(tr("Not staking because blockchain is still in the proof-of-work phase"));
         overviewPage->setStrength(0);

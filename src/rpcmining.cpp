@@ -54,7 +54,7 @@ Value getmininginfo(const Array& params, bool fHelp)
     weight.push_back(Pair("combined",  (uint64_t)nWeight));
     obj.push_back(Pair("stakeweight", weight));
 
-    obj.push_back(Pair("stakeinterest", ValueFromAmount(GetInterestRate(true))));
+    obj.push_back(Pair("stakeinterest", ValueFromAmount(GetInterestRate(GetLastBlockIndex(pindexBest, true), true))));
     obj.push_back(Pair("testnet",       fTestNet));
     return obj;
 }
@@ -88,7 +88,7 @@ Value getstakinginfo(const Array& params, bool fHelp)
 
     obj.push_back(Pair("weight", (uint64_t)nWeight));
     obj.push_back(Pair("netstakeweight", (uint64_t)nNetworkWeight));
-    obj.push_back(Pair("stakeinterest", ValueFromAmount(GetInterestRate(true))));
+    obj.push_back(Pair("stakeinterest", ValueFromAmount(GetInterestRate(GetLastBlockIndex(pindexBest, true), true))));
 
     obj.push_back(Pair("expectedtime", nExpectedTime));
 
@@ -109,7 +109,7 @@ Value getworkex(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(-10, "Guerillacoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+    if (pindexBest->nHeight >= nLastPowBlock)
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
@@ -243,7 +243,7 @@ Value getwork(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Guerillacoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+    if (pindexBest->nHeight >= nLastPowBlock)
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
@@ -387,7 +387,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Guerillacoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+    if (pindexBest->nHeight >= nLastPowBlock)
         throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     static CReserveKey reservekey(pwalletMain);

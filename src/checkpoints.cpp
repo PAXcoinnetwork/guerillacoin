@@ -29,6 +29,10 @@ namespace Checkpoints
         boost::assign::map_list_of
         ( 0,      hashGenesisBlock )
         ( 2074,   uint256("0x0000000000213fa69bb5c2727b115fa11531b94fded76d6696523c03a88337c0") )
+        ( 4000,   uint256("0x00000000002a5e6b9ea117fe1057388b1fc5ac95e1a6ddee1207bce82208fc6c") )
+        ( 6349,   uint256("0xfbfdb01ceb1ab7579ae320056855e2e61d3b1d4a4b1845cd79b1e5be0caa09a7") )
+        ( 13644,  uint256("0x37dc84f51b74aa2b53e2393f96af3f8d4818ca5fca51901e109e04d85a3227b0") )
+        ( 16450,  uint256("0xfd45c53b6ebd58085646adba6fef6b946c80c883fbda6ca8822de3e80eb13f27") )
     ;
 
     // TestNet has no checkpoints
@@ -319,7 +323,7 @@ namespace Checkpoints
             return error("SendSyncCheckpoint: Checkpoint master key unavailable.");
         std::vector<unsigned char> vchPrivKey = ParseHex(CSyncCheckpoint::strMasterPrivKey);
         CKey key;
-        key.SetPrivKey(CPrivKey(vchPrivKey.begin(), vchPrivKey.end())); // if key is not correct openssl may crash
+        key.SetSecret(CSecret(vchPrivKey.begin(), vchPrivKey.end()));
         if (!key.Sign(Hash(checkpoint.vchMsg.begin(), checkpoint.vchMsg.end()), checkpoint.vchSig))
             return error("SendSyncCheckpoint: Unable to sign checkpoint, check private key?");
 
@@ -351,7 +355,7 @@ namespace Checkpoints
 }
 
 // ppcoin: sync-checkpoint master key
-const std::string CSyncCheckpoint::strMasterPubKey = "04a18357665ed7a802dcf252ef528d3dc786da38653b51d1ab8e9f4820b55aca807892a056781967315908ac205940ec9d6f2fd0a85941966971eac7e475a27826";
+const std::string CSyncCheckpoint::strMasterPubKey = "040a05088208c8bc5b82c93143629444e3d61d36d3a65c074affcd3abd6cfba165679513aaf08da2954134273d190e709473f4a460024c805939a97aa23578f0d2";
 
 std::string CSyncCheckpoint::strMasterPrivKey = "";
 

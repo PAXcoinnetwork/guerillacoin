@@ -61,6 +61,7 @@ public:
     void SetNull();
 
     std::string ToString() const;
+    std::string GetSubVerString() const;
     void print() const;
 };
 
