@@ -499,7 +499,7 @@ bool AppInit2()
         return InitError(_("Initialization sanity check failed. BlackCoin is shutting down."));
 
     std::string strDataDir = GetDataDir().string();
-    strWalletFileName = GetArg("-wallet", "wallet.dat");
+    std::string strWalletFileName = GetArg("-wallet", "wallet.dat");
 
     // strWalletFileName must be a plain filename without a directory
     if (strWalletFileName != boost::filesystem::basename(strWalletFileName) + boost::filesystem::extension(strWalletFileName))
