@@ -34,6 +34,7 @@ struct CompareValueOnly
 
 CPubKey CWallet::GenerateNewKey()
 {
+    AssertLockHeld(cs_wallet); // mapKeyMetadata
     bool fCompressed = CanSupportFeature(FEATURE_COMPRPUBKEY); // default to compressed public keys if we want 0.6.0 wallets
 
     RandAddSeedPerfmon();
@@ -59,6 +60,8 @@ CPubKey CWallet::GenerateNewKey()
 
 bool CWallet::AddKey(const CKey& key)
 {
+    AssertLockHeld(cs_wallet); // mapKeyMetadata
+
     CPubKey pubkey = key.GetPubKey();
 
     if (!CCryptoKeyStore::AddKey(key))
@@ -88,6 +91,7 @@ bool CWallet::AddCryptedKey(const CPubKey &vchPubKey, const vector<unsigned char
 
 bool CWallet::LoadKeyMetadata(const CPubKey &pubkey, const CKeyMetadata &meta)
 {
+    AssertLockHeld(cs_wallet); // mapKeyMetadata
     if (meta.nCreateTime && (!nTimeFirstKey || meta.nCreateTime < nTimeFirstKey))
         nTimeFirstKey = meta.nCreateTime;
 
@@ -207,6 +211,7 @@ void CWallet::SetBestChain(const CBlockLocator& loc)
 
 bool CWallet::SetMinVersion(enum WalletFeature nVersion, CWalletDB* pwalletdbIn, bool fExplicit)
 {
+    LOCK(cs_wallet); // nWalletVersion
     if (nWalletVersion >= nVersion)
         return true;
 
@@ -233,6 +238,7 @@ bool CWallet::SetMinVersion(enum WalletFeature nVersion, CWalletDB* pwalletdbIn,
 
 bool CWallet::SetMaxVersion(int nVersion)
 {
+    LOCK(cs_wallet); // nWalletVersion, nWalletMaxVersion
     // cannot downgrade below current version
     if (nWalletVersion > nVersion)
         return false;
@@ -325,6 +331,7 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
 
 int64_t CWallet::IncOrderPosNext(CWalletDB *pwalletdb)
 {
+    AssertLockHeld(cs_wallet); // nOrderPosNext
     int64_t nRet = nOrderPosNext++;
     if (pwalletdb) {
         pwalletdb->WriteOrderPosNext(nOrderPosNext);
@@ -336,6 +343,7 @@ int64_t CWallet::IncOrderPosNext(CWalletDB *pwalletdb)
 
 CWallet::TxItems CWallet::OrderedTxItems(std::list<CAccountingEntry>& acentries, std::string strAccount)
 {
+    AssertLockHeld(cs_wallet); // mapWallet
     CWalletDB walletdb(strWalletFile);
 
     // First: get all CWalletTx and CAccountingEntry into a sorted-by-order multimap.
@@ -803,7 +811,7 @@ void CWalletTx::AddSupportingTransactions(CTxDB& txdb)
                 {
                     tx = *mapWalletPrev[hash];
                 }
-                else if (!fClient && txdb.ReadDiskTx(hash, tx))
+                else if (txdb.ReadDiskTx(hash, tx))
                 {
                     ;
                 }
@@ -842,7 +850,7 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
 
     CBlockIndex* pindex = pindexStart;
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         while (pindex)
         {
             // no need to read and scan block, if block was created before
@@ -865,22 +873,13 @@ int CWallet::ScanForWalletTransactions(CBlockIndex* pindexStart, bool fUpdate)
     return ret;
 }
 
-int CWallet::ScanForWalletTransaction(const uint256& hashTx)
-{
-    CTransaction tx;
-    tx.ReadFromDisk(COutPoint(hashTx, 0));
-    if (AddToWalletIfInvolvingMe(tx, NULL, true, true))
-        return 1;
-    return 0;
-}
-
 void CWallet::ReacceptWalletTransactions()
 {
     CTxDB txdb("r");
     bool fRepeat = true;
     while (fRepeat)
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         fRepeat = false;
         vector<CDiskTxPos> vMissingTx;
         BOOST_FOREACH(PAIRTYPE(const uint256, CWalletTx)& item, mapWallet)
@@ -1023,7 +1022,7 @@ int64_t CWallet::GetBalance() const
 {
     int64_t nTotal = 0;
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
@@ -1039,7 +1038,7 @@ int64_t CWallet::GetUnconfirmedBalance() const
 {
     int64_t nTotal = 0;
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
@@ -1054,7 +1053,7 @@ int64_t CWallet::GetImmatureBalance() const
 {
     int64_t nTotal = 0;
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx& pcoin = (*it).second;
@@ -1071,7 +1070,7 @@ void CWallet::AvailableCoins(vector<COutput>& vCoins, bool fOnlyConfirmed, const
     vCoins.clear();
 
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
@@ -1106,7 +1105,7 @@ void CWallet::AvailableCoinsMinConf(vector<COutput>& vCoins, int nConf) const
     vCoins.clear();
 
     {
-        LOCK(cs_wallet);
+        LOCK2(cs_main, cs_wallet);
         for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
         {
             const CWalletTx* pcoin = &(*it).second;
@@ -1166,7 +1165,7 @@ static void ApproximateBestSubset(vector<pair<int64_t, pair<const CWalletTx*,uns
 int64_t CWallet::GetStake() const
 {
     int64_t nTotal = 0;
-    LOCK(cs_wallet);
+    LOCK2(cs_main, cs_wallet);
     for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
     {
         const CWalletTx* pcoin = &(*it).second;
@@ -1179,7 +1178,7 @@ int64_t CWallet::GetStake() const
 int64_t CWallet::GetNewMint() const
 {
     int64_t nTotal = 0;
-    LOCK(cs_wallet);
+    LOCK2(cs_main, cs_wallet);
     for (map<uint256, CWalletTx>::const_iterator it = mapWallet.begin(); it != mapWallet.end(); ++it)
     {
         const CWalletTx* pcoin = &(*it).second;
@@ -1893,6 +1892,7 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
     {
         if (CDB::Rewrite(strWalletFile, "\x04pool"))
         {
+            LOCK(cs_wallet);
             setKeyPool.clear();
             // Note: can't top-up keypool here, because wallet is locked.
             // User will be prompted to unlock wallet the next operation
@@ -1911,9 +1911,15 @@ DBErrors CWallet::LoadWallet(bool& fFirstRunRet)
 
 bool CWallet::SetAddressBookName(const CTxDestination& address, const string& strName)
 {
-    std::map<CTxDestination, std::string>::iterator mi = mapAddressBook.find(address);
-    mapAddressBook[address] = strName;
-    NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address), (mi == mapAddressBook.end()) ? CT_NEW : CT_UPDATED);
+    bool fUpdated = false;
+    {
+        LOCK(cs_wallet); // mapAddressBook
+        std::map<CTxDestination, std::string>::iterator mi = mapAddressBook.find(address);
+        fUpdated = mi != mapAddressBook.end();
+        mapAddressBook[address] = strName;
+    }
+    NotifyAddressBookChanged(this, address, strName, ::IsMine(*this, address),
+                             (fUpdated ? CT_UPDATED : CT_NEW) );
     if (!fFileBacked)
         return false;
     return CWalletDB(strWalletFile).WriteName(CBitcoinAddress(address).ToString(), strName);
@@ -1921,8 +1927,14 @@ bool CWallet::SetAddressBookName(const CTxDestination& address, const string& st
 
 bool CWallet::DelAddressBookName(const CTxDestination& address)
 {
-    mapAddressBook.erase(address);
+    {
+        LOCK(cs_wallet); // mapAddressBook
+
+        mapAddressBook.erase(address);
+    }
+
     NotifyAddressBookChanged(this, address, "", ::IsMine(*this, address), CT_DELETED);
+
     if (!fFileBacked)
         return false;
     return CWalletDB(strWalletFile).EraseName(CBitcoinAddress(address).ToString());
@@ -2183,6 +2195,7 @@ std::map<CTxDestination, int64_t> CWallet::GetAddressBalances()
 
 set< set<CTxDestination> > CWallet::GetAddressGroupings()
 {
+    AssertLockHeld(cs_wallet); // mapWallet
     set< set<CTxDestination> > groupings;
     set<CTxDestination> grouping;
 
@@ -2405,6 +2418,7 @@ void CWallet::UpdatedTransaction(const uint256 &hashTx)
 }
 
 void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t> &mapKeyBirth) const {
+    AssertLockHeld(cs_wallet); // mapKeyMetadata
     mapKeyBirth.clear();
 
     // get birth times for keys with metadata

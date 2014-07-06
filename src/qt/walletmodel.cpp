@@ -76,11 +76,24 @@ void WalletModel::updateStatus()
 
 void WalletModel::pollBalanceChanged()
 {
+    // Get required locks upfront. This avoids the GUI from getting stuck on
+    // periodical polls if the core is holding the locks for a longer time -
+    // for example, during a wallet rescan.
+    TRY_LOCK(cs_main, lockMain);
+    if(!lockMain)
+        return;
+    TRY_LOCK(wallet->cs_wallet, lockWallet);
+    if(!lockWallet)
+        return;
+
     if(nBestHeight != cachedNumBlocks)
     {
         // Balance and number of transactions might have changed
         cachedNumBlocks = nBestHeight;
+
         checkBalanceChanged();
+        if(transactionTableModel)
+            transactionTableModel->updateConfirmations();
     }
 }
 
@@ -404,6 +417,7 @@ bool WalletModel::getPubKey(const CKeyID &address, CPubKey& vchPubKeyOut) const
 // returns a list of COutputs from COutPoints
 void WalletModel::getOutputs(const std::vector<COutPoint>& vOutpoints, std::vector<COutput>& vOutputs)
 {
+    LOCK2(cs_main, wallet->cs_wallet);
     BOOST_FOREACH(const COutPoint& outpoint, vOutpoints)
     {
         if (!wallet->mapWallet.count(outpoint.hash)) continue;
@@ -419,6 +433,8 @@ void WalletModel::listCoins(std::map<QString, std::vector<COutput> >& mapCoins) 
 {
     std::vector<COutput> vCoins;
     wallet->AvailableCoins(vCoins);
+
+    LOCK2(cs_main, wallet->cs_wallet); // ListLockedCoins, mapWallet
     std::vector<COutPoint> vLockedCoins;
 
     // add locked coins
