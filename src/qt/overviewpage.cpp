@@ -191,7 +191,7 @@ const std::vector<strengthlevel> levels =
         ("Whale", 75)
         ("King Midas", 100);
 
-const double levelreq[] = {0, 0.00001, 0.0001, 0.001, 0.02, 0.05, 0.01, 0.15, 0.2, 0.25, 1.0};
+const double levelreq[] = {0, 0.00001, 0.0001, 0.001, 0.02, 0.05, 0.1, 0.15, 0.2, 0.25, 1.0};
 
 int8_t getStrengthLevel(double strength)
 {
@@ -222,10 +222,12 @@ double GetStrength(double nWeight, double networkWeight)
 
 double OverviewPage::getNextLevelEstimate(double strength)
 {
-    double nextLevel = getNextLevelReq(strength);
-    if(networkWeight == 0)
+    if(networkWeight == 0 || networkWeight == weight)
         return 0;
-    return (nextLevel * networkWeight)/(1 - networkWeight) - weight;
+    double nextLevel = getNextLevelReq(strength);
+    if(nextLevel == 0.5) nextLevel += 0.0001;
+    
+    return (weight - nextLevel * (weight + networkWeight))/(2 * nextLevel -  1);
 }
 
 void OverviewPage::setStrength(double strength)
@@ -248,9 +250,9 @@ void OverviewPage::setStrength(double strength)
         if (levelIdx < 10 && networkWeight > 0)
         {
             strengthlevel nextLevel = levels[levelIdx + 1];
-            tooltip.append(QString(" Next level: %1, in %2 coins.")
+            tooltip.append(QString(" Next level: %1, in about %2 coins.")
                            .arg(nextLevel.first)
-                           .arg(QString::number(getNextLevelEstimate(strength), 'f', 8)));
+                           .arg(QString::number(getNextLevelEstimate(strength), 'f', 0)));
         }
     }
     
@@ -272,7 +274,7 @@ void OverviewPage::setWeight(double nWeight)
 
 void OverviewPage::setNetworkWeight(double nWeight)
 {
-    weight = nWeight;
+    networkWeight = nWeight;
 }
 
 void OverviewPage::setInterestRate(qint64 interest)
