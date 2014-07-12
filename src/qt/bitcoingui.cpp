@@ -980,7 +980,7 @@ void BitcoinGUI::updateStakingIcon()
     updateWeight();
 
 
-    if (nLastCoinStakeSearchInterval && nWeight)
+    if (nLastCoinStakeSearchInterval && nWeight && !IsInitialBlockDownload())
     {
         uint64_t nNetworkWeight = GetPoSKernelPS();
         unsigned nEstimateTime = nTargetSpacing * nNetworkWeight / nWeight;
