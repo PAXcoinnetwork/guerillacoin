@@ -3230,7 +3230,7 @@ for example: alertnotify=echo %%s | mail -s &quot;Guerillacoin Alert&quot; admin
     <message>
         <location line="+122"/>
         <source>Unable to bind to %s on this computer. Guerillacoin is probably already running.</source>
-        <translation>Fehler beim anbinden %s auf diesem Computer. BlaclCoin Client läuft wahrscheinlich bereits.</translation>
+        <translation>Fehler beim anbinden %s auf diesem Computer. Guerillacoin Client läuft wahrscheinlich bereits.</translation>
     </message>
     <message>
         <location line="-97"/>
